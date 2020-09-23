@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/console"
-	"github.com/dop251/goja_nodejs/require"
+	"github.com/team-rocos/goja_nodejs/console"
+	"github.com/team-rocos/goja_nodejs/require"
 )
 
 type job struct {
@@ -26,7 +26,7 @@ type Interval struct {
 }
 
 type EventLoop struct {
-	vm       *goja.Runtime
+	Vm       *goja.Runtime
 	jobChan  chan func()
 	jobCount int32
 	running  bool
@@ -42,7 +42,7 @@ func NewEventLoop(opts ...Option) *EventLoop {
 	vm := goja.New()
 
 	loop := &EventLoop{
-		vm:            vm,
+		Vm:            vm,
 		jobChan:       make(chan func()),
 		wakeup:        make(chan struct{}, 1),
 		enableConsole: true,
@@ -86,9 +86,9 @@ func (loop *EventLoop) schedule(call goja.FunctionCall, repeating bool) goja.Val
 		f := func() { fn(nil, args...) }
 		loop.jobCount++
 		if repeating {
-			return loop.vm.ToValue(loop.addInterval(f, time.Duration(delay)*time.Millisecond))
+			return loop.Vm.ToValue(loop.addInterval(f, time.Duration(delay)*time.Millisecond))
 		} else {
-			return loop.vm.ToValue(loop.addTimeout(f, time.Duration(delay)*time.Millisecond))
+			return loop.Vm.ToValue(loop.addTimeout(f, time.Duration(delay)*time.Millisecond))
 		}
 	}
 	return nil
@@ -109,7 +109,7 @@ func (loop *EventLoop) setInterval(call goja.FunctionCall) goja.Value {
 // from it must not be used outside of the function. SetTimeout is
 // safe to call inside or outside of the loop.
 func (loop *EventLoop) SetTimeout(fn func(*goja.Runtime), timeout time.Duration) *Timer {
-	t := loop.addTimeout(func() { fn(loop.vm) }, timeout)
+	t := loop.addTimeout(func() { fn(loop.Vm) }, timeout)
 	loop.addAuxJob(func() {
 		loop.jobCount++
 	})
@@ -132,7 +132,7 @@ func (loop *EventLoop) ClearTimeout(t *Timer) {
 // the function. SetInterval is safe to call inside or outside of the
 // loop.
 func (loop *EventLoop) SetInterval(fn func(*goja.Runtime), timeout time.Duration) *Interval {
-	i := loop.addInterval(func() { fn(loop.vm) }, timeout)
+	i := loop.addInterval(func() { fn(loop.Vm) }, timeout)
 	loop.addAuxJob(func() {
 		loop.jobCount++
 	})
@@ -153,7 +153,7 @@ func (loop *EventLoop) ClearInterval(i *Interval) {
 // of the function.
 // Do NOT use this function while the loop is already running. Use RunOnLoop() instead.
 func (loop *EventLoop) Run(fn func(*goja.Runtime)) {
-	fn(loop.vm)
+	fn(loop.Vm)
 	loop.run(false)
 }
 
@@ -181,7 +181,7 @@ func (loop *EventLoop) Stop() {
 // The instance of goja.Runtime that is passed to the function and any Values derived from it must not be used outside
 // of the function. It is safe to call inside or outside of the loop.
 func (loop *EventLoop) RunOnLoop(fn func(*goja.Runtime)) {
-	loop.addAuxJob(func() { fn(loop.vm) })
+	loop.addAuxJob(func() { fn(loop.Vm) })
 }
 
 func (loop *EventLoop) runAux() {

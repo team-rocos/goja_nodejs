@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/require"
-	_ "github.com/dop251/goja_nodejs/util"
+	"github.com/team-rocos/goja_nodejs/require"
+	_ "github.com/team-rocos/goja_nodejs/util"
 )
 
 type Console struct {

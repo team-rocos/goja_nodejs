@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/require"
+	"github.com/team-rocos/goja_nodejs/require"
 )
 
 func TestUtil_Format(t *testing.T) {
