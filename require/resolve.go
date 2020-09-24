@@ -52,7 +52,7 @@ func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
 	}
 
 	if module == nil && err == nil {
-		err = InvalidModuleError
+		err = errors.New("Invalid module (" + path + ")")
 	}
 	return
 }
@@ -75,7 +75,7 @@ func (r *RequireModule) loadNative(path string) (*js.Object, error) {
 		return module, nil
 	}
 
-	return nil, InvalidModuleError
+	return nil, errors.New("Invalid module (" + path + ")")
 }
 
 func (r *RequireModule) loadAsFileOrDirectory(path string) (module *js.Object, err error) {
@@ -162,7 +162,7 @@ func (r *RequireModule) loadNodeModules(path, start string) (module *js.Object, 
 		start = parent
 	}
 
-	return nil, InvalidModuleError
+	return nil, errors.New("Invalid module (" + path + ")")
 }
 
 func (r *RequireModule) getCurrentModulePath() string {
@@ -224,7 +224,7 @@ func (r *RequireModule) loadModuleFile(path string, jsModule *js.Object) error {
 			return err
 		}
 	} else {
-		return InvalidModuleError
+		return errors.New("Invalid module (" + path + ")")
 	}
 
 	return nil
