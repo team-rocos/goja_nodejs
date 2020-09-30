@@ -13,7 +13,7 @@ import (
 // NodeJS module search algorithm described by
 // https://nodejs.org/api/modules.html#modules_all_together
 func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
-	fmt.Println("HERE")
+	fmt.Println(path)
 	origPath, path := path, filepathClean(path)
 	if path == "" {
 		return nil, IllegalModuleNameError
