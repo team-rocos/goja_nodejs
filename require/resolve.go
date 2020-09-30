@@ -3,6 +3,7 @@ package require
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -12,6 +13,7 @@ import (
 // NodeJS module search algorithm described by
 // https://nodejs.org/api/modules.html#modules_all_together
 func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
+	fmt.Println("HERE")
 	origPath, path := path, filepathClean(path)
 	if path == "" {
 		return nil, IllegalModuleNameError
