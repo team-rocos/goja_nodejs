@@ -13,15 +13,16 @@ import (
 // NodeJS module search algorithm described by
 // https://nodejs.org/api/modules.html#modules_all_together
 func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
-	fmt.Println(path)
 	origPath, path := path, filepathClean(path)
 	if path == "" {
+		fmt.Printf("failed to import '%s' empty path\n", origPath)
 		return nil, IllegalModuleNameError
 	}
 
-	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") && !strings.HasPrefix(path, "/") {
+	if !strings.HasPrefix(origPath, "./") && !strings.HasPrefix(origPath, "../") && !strings.HasPrefix(origPath, "/") {
 		module, err = r.loadNative(path)
 		if err == nil {
+			fmt.Printf("imported '%s' - native module %s\n", origPath, path)
 			return
 		}
 	}
@@ -39,19 +40,23 @@ func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
 		strings.HasPrefix(origPath, "/") || strings.HasPrefix(origPath, "../") ||
 		origPath == "." || origPath == ".." {
 		if module = r.modules[p]; module != nil {
+			fmt.Printf("imported '%s' - already in registry: %s\n", origPath, p)
 			return
 		}
 		module, err = r.loadAsFileOrDirectory(p)
 		if err == nil && module != nil {
 			r.modules[p] = module
+			fmt.Printf("imported '%s' - from %s\n", origPath, p)
 		}
 	} else {
 		if module = r.nodeModules[p]; module != nil {
+			fmt.Printf("imported '%s' - already in registry: %s\n", origPath, p)
 			return
 		}
 		module, err = r.loadNodeModules(path, start)
 		if err == nil && module != nil {
 			r.nodeModules[p] = module
+			fmt.Printf("imported '%s' - from %s : %s\n", origPath, path, start)
 		}
 	}
 
