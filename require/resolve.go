@@ -19,9 +19,11 @@ func (r *RequireModule) resolve(path string) (module *js.Object, err error) {
 		return nil, IllegalModuleNameError
 	}
 
-	module, err = r.loadNative(path)
-	if err == nil {
-		return
+	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") && !strings.HasPrefix(path, "/") {
+		module, err = r.loadNative(path)
+		if err == nil {
+			return
+		}
 	}
 
 	var start string
